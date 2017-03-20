@@ -107,8 +107,8 @@ hs.hotkey.bind(shortmod, "Y", hs.grid.resizeWindowThinner)
 hs.hotkey.bind(shortmod, "U", hs.grid.resizeWindowShorter)
 hs.hotkey.bind(shortmod, "I", hs.grid.resizeWindowTaller)
 hs.hotkey.bind(shortmod, "O", hs.grid.resizeWindowWider)
-hs.hotkey.bind(shortmod, "N", hs.grid.pushWindowNextScreen)
-hs.hotkey.bind(shortmod, "P", hs.grid.pushWindowPrevScreen)
+hs.hotkey.bind(shortmod, "[", hs.grid.pushWindowPrevScreen)
+hs.hotkey.bind(shortmod, "]", hs.grid.pushWindowNextScreen)
 hs.hotkey.bind(shortmod, "A", leftSplit)
 hs.hotkey.bind(shortmod, "D", rightSplit)
 
@@ -118,6 +118,7 @@ hs.hotkey.bind(fullmod, "K", toggleKeyboardLayout)
 hs.hotkey.bind(fullmod, "A", function () hs.application.launchOrFocus("Atom") end)
 hs.hotkey.bind(fullmod, "C", function () hs.application.launchOrFocus("Google Chrome") end)
 hs.hotkey.bind(fullmod, "I", function () hs.application.launchOrFocus("iTerm") end)
+hs.hotkey.bind(fullmod, "O", function () hs.application.launchOrFocus("Microsoft Outlook") end)
 
 -- YEY, everything's been loaded
 hs.alert.show("hammerspoon ready!")
