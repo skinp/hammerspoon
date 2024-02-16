@@ -2,6 +2,7 @@
 local caffeine = require("caffeine")
 local reloadWatcher = nil
 local appWatcher = nil
+local screenWatcher = nil
 
 hs.window.animationDuration = 0
 
@@ -75,6 +76,37 @@ end
 function appWatcherCallback(name, event, app)
 end
 
+function applyDeskLayout()
+  local macbookMonitor = "Built-in Retina Display"
+  local centerMonitor = "LF32TU87"
+  local rightMonitor = "S2719DGF"
+
+  local deskLayout = {
+      {"Chrome", nil, centerMonitor, hs.layout.left70, nil, nil},
+      {"iTerm2", nil, centerMonitor, hs.layout.right30, nil, nil},
+      {"Workplace Chat", nil, rightMonitor, hs.geometry.rect(0, 0.5, 1, 0.5), nil, nil},
+      {"WhatsApp", nil, rightMonitor, hs.geometry.rect(0, 0.5, 1, 0.5), nil, nil},
+      {"Mattermost", nil, rightMonitor, hs.geometry.rect(0, 0, 1, 0.5), nil, nil},
+      {"VS Code", nil, macbookMonitor, hs.layout.maximized, nil, nil},
+      {"Spotify", nil, macbookMonitor, hs.layout.maximized, nil, nil},
+  }
+
+  -- mac
+  hs.application.launchOrFocus("Google Chrome")
+  hs.application.launchOrFocus("iTerm2")
+  -- center
+  hs.application.launchOrFocus("WhatsApp")
+  hs.application.launchOrFocus("Workplace Chat")
+  hs.application.launchOrFocus("Mattermost")
+  -- right
+  hs.application.launchOrFocus("Spotify")
+  hs.application.launchOrFocus("VS Code @ FB")
+
+  if hs.screen.find(centerMonitor) ~= nil and hs.screen.find(rightMonitor) then
+    hs.layout.apply(deskLayout)
+  end
+end
+
 -- toggle an application: if frontmost: hide it. if not: activate/launch it
 -- function toggleApplication(name)
 --     local app = hs.application.find(name)
@@ -92,6 +124,7 @@ caffeine:start()
 
 reloadWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig):start()
 appWatcher = hs.application.watcher.new(appWatcherCallback):start()
+screenWatcher = hs.screen.watcher.new(applyDeskLayout):start()
 
 -- KEYS
 shortmod = {"ctrl", "cmd"}
@@ -112,13 +145,13 @@ hs.hotkey.bind(shortmod, "]", hs.grid.pushWindowNextScreen)
 hs.hotkey.bind(shortmod, "A", leftSplit)
 hs.hotkey.bind(shortmod, "D", rightSplit)
 
+hs.hotkey.bind(fullmod, "D", applyDeskLayout)
 hs.hotkey.bind(fullmod, "L", hs.caffeinate.startScreensaver)
 hs.hotkey.bind(fullmod, "S", spotifyTrack)
 hs.hotkey.bind(fullmod, "K", toggleKeyboardLayout)
-hs.hotkey.bind(fullmod, "A", function () hs.application.launchOrFocus("Atom") end)
 hs.hotkey.bind(fullmod, "C", function () hs.application.launchOrFocus("Google Chrome") end)
-hs.hotkey.bind(fullmod, "I", function () hs.application.launchOrFocus("iTerm") end)
-hs.hotkey.bind(fullmod, "O", function () hs.application.launchOrFocus("Microsoft Outlook") end)
+hs.hotkey.bind(fullmod, "I", function () hs.application.launchOrFocus("iTerm2") end)
+
 
 -- YEY, everything's been loaded
 hs.alert.show("hammerspoon ready!")
