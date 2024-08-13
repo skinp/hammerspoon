@@ -8,7 +8,7 @@ hs.window.animationDuration = 0
 
 hs.grid.MARGINX = 0
 hs.grid.MARGINY = 0
-hs.grid.GRIDWIDTH = 6
+hs.grid.GRIDWIDTH = 4
 hs.grid.GRIDHEIGHT = 2
 
 -- FUNCTIONS
@@ -76,55 +76,68 @@ end
 function appWatcherCallback(name, event, app)
 end
 
-function applyDeskLayout()
+function applyDeskLayout(version)
   local macbookMonitor = "Built-in Retina Display"
   local centerMonitor = "LF32TU87"
   local rightMonitor = "S2719DGF"
 
-  local deskLayout = {
-      {"Chrome", nil, centerMonitor, hs.layout.left70, nil, nil},
-      {"iTerm2", nil, centerMonitor, hs.layout.right30, nil, nil},
+  local deskLayoutWeb = {
+      {"Chrome", nil, centerMonitor, hs.layout.left75, nil, nil},
+      {"iTerm2", nil, centerMonitor, hs.layout.right25, nil, nil},
       {"Workplace Chat", nil, rightMonitor, hs.geometry.rect(0, 0.5, 1, 0.5), nil, nil},
-      {"WhatsApp", nil, rightMonitor, hs.geometry.rect(0, 0.5, 1, 0.5), nil, nil},
       {"Mattermost", nil, rightMonitor, hs.geometry.rect(0, 0, 1, 0.5), nil, nil},
       {"VS Code", nil, macbookMonitor, hs.layout.maximized, nil, nil},
       {"Spotify", nil, macbookMonitor, hs.layout.maximized, nil, nil},
   }
 
+  local deskLayoutCode = {
+    {"Chrome", nil, macbookMonitor, hs.layout.maximized, nil, nil},
+    {"iTerm2", nil, centerMonitor, hs.layout.right25, nil, nil},
+    {"Workplace Chat", nil, rightMonitor, hs.geometry.rect(0, 0.5, 1, 0.5), nil, nil},
+    {"Mattermost", nil, rightMonitor, hs.geometry.rect(0, 0, 1, 0.5), nil, nil},
+    {"VS Code", nil, centerMonitor, hs.layout.left75, nil, nil},
+    {"Spotify", nil, macbookMonitor, hs.layout.maximized, nil, nil},
+}
+
   -- mac
-  hs.application.launchOrFocus("Google Chrome")
-  hs.application.launchOrFocus("iTerm2")
-  -- center
-  hs.application.launchOrFocus("WhatsApp")
+  hs.application.launchOrFocus("Spotify")
+  hs.application.launchOrFocus("VS Code @ Meta")
+  -- right
   hs.application.launchOrFocus("Workplace Chat")
   hs.application.launchOrFocus("Mattermost")
-  -- right
-  hs.application.launchOrFocus("Spotify")
-  hs.application.launchOrFocus("VS Code @ FB")
+  -- center
+  hs.application.launchOrFocus("Google Chrome")
+  hs.application.launchOrFocus("iTerm2")
+
 
   if hs.screen.find(centerMonitor) ~= nil and hs.screen.find(rightMonitor) then
-    hs.layout.apply(deskLayout)
+    if version == "web" then
+      hs.layout.apply(deskLayoutWeb)
+    end
+    if version == "code" then
+      hs.layout.apply(deskLayoutCode)
+    end
   end
+ 
+  vscode = hs.application.get("VS Code @ Meta"):mainWindow():raise()
+  chrome = hs.application.get("Google Chrome"):mainWindow():raise()
+  spotify = hs.application.get("Spotify"):mainWindow():sendToBack()
 end
 
--- toggle an application: if frontmost: hide it. if not: activate/launch it
--- function toggleApplication(name)
---     local app = hs.application.find(name)
---     if not app or app:isHidden() then
---         hs.application.launchOrFocus(name)
---     elseif hs.application.frontmostApplication() ~= app then
---         app:activate()
---     else
---         app:hide()
---     end
--- end
+function applyDeskLayoutWeb()
+  applyDeskLayout("web")
+end
+
+function applyDeskLayoutCode()
+  applyDeskLayout("code")
+end
 
 -- WATCHERS + SERVICES
 caffeine:start()
 
 reloadWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig):start()
 appWatcher = hs.application.watcher.new(appWatcherCallback):start()
-screenWatcher = hs.screen.watcher.new(applyDeskLayout):start()
+screenWatcher = hs.screen.watcher.new(applyDeskLayoutWeb):start()
 
 -- KEYS
 shortmod = {"ctrl", "cmd"}
@@ -145,7 +158,8 @@ hs.hotkey.bind(shortmod, "]", hs.grid.pushWindowNextScreen)
 hs.hotkey.bind(shortmod, "A", leftSplit)
 hs.hotkey.bind(shortmod, "D", rightSplit)
 
-hs.hotkey.bind(fullmod, "D", applyDeskLayout)
+hs.hotkey.bind(fullmod, "1", applyDeskLayoutWeb)
+hs.hotkey.bind(fullmod, "2", applyDeskLayoutCode)
 hs.hotkey.bind(fullmod, "L", hs.caffeinate.startScreensaver)
 hs.hotkey.bind(fullmod, "S", spotifyTrack)
 hs.hotkey.bind(fullmod, "K", toggleKeyboardLayout)
