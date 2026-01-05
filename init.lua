@@ -81,55 +81,93 @@ function applyDeskLayout(version)
   local centerMonitor = "LF32TU87"
   local rightMonitor = "S2719DGF"
 
-  local deskLayoutWeb = {
+  local deskLayoutWeb1 = {
       {"Chrome", nil, centerMonitor, hs.layout.left75, nil, nil},
       {"iTerm2", nil, centerMonitor, hs.layout.right25, nil, nil},
-      {"Workplace Chat", nil, rightMonitor, hs.geometry.rect(0, 0.5, 1, 0.5), nil, nil},
+      {"Workchat", nil, rightMonitor, hs.geometry.rect(0, 0.5, 1, 0.5), nil, nil},
       {"Mattermost", nil, rightMonitor, hs.geometry.rect(0, 0, 1, 0.5), nil, nil},
+      {"Google Chat", nil, rightMonitor, hs.geometry.rect(0, 0, 1, 0.5), nil, nil},
       {"VS Code", nil, macbookMonitor, hs.layout.maximized, nil, nil},
-      {"Spotify", nil, macbookMonitor, hs.layout.maximized, nil, nil},
+      -- {"Spotify", nil, macbookMonitor, hs.layout.maximized, nil, nil},
   }
 
-  local deskLayoutCode = {
+  local deskLayoutCode1 = {
     {"Chrome", nil, macbookMonitor, hs.layout.maximized, nil, nil},
     {"iTerm2", nil, centerMonitor, hs.layout.right25, nil, nil},
-    {"Workplace Chat", nil, rightMonitor, hs.geometry.rect(0, 0.5, 1, 0.5), nil, nil},
+    {"Workchat", nil, rightMonitor, hs.geometry.rect(0, 0.5, 1, 0.5), nil, nil},
     {"Mattermost", nil, rightMonitor, hs.geometry.rect(0, 0, 1, 0.5), nil, nil},
+    {"Google Chat", nil, rightMonitor, hs.geometry.rect(0, 0, 1, 0.5), nil, nil},
     {"VS Code", nil, centerMonitor, hs.layout.left75, nil, nil},
-    {"Spotify", nil, macbookMonitor, hs.layout.maximized, nil, nil},
-}
+    -- {"Spotify", nil, macbookMonitor, hs.layout.maximized, nil, nil},
+  }
+
+  local deskLayoutWeb2 = {
+      {"Chrome", nil, centerMonitor, hs.layout.left50, nil, nil},
+      {"iTerm2", nil, centerMonitor, hs.layout.right50, nil, nil},
+      {"Workchat", nil, rightMonitor, hs.geometry.rect(0, 0.5, 1, 0.5), nil, nil},
+      {"Mattermost", nil, rightMonitor, hs.geometry.rect(0, 0, 1, 0.5), nil, nil},
+      {"Google Chat", nil, rightMonitor, hs.geometry.rect(0, 0, 1, 0.5), nil, nil},
+      {"VS Code", nil, macbookMonitor, hs.layout.maximized, nil, nil},
+      -- {"Spotify", nil, macbookMonitor, hs.layout.maximized, nil, nil},
+  }
+
+  local deskLayoutCode2 = {
+    {"Chrome", nil, macbookMonitor, hs.layout.maximized, nil, nil},
+    {"iTerm2", nil, centerMonitor, hs.layout.right50, nil, nil},
+    {"Workchat", nil, rightMonitor, hs.geometry.rect(0, 0.5, 1, 0.5), nil, nil},
+    {"Mattermost", nil, rightMonitor, hs.geometry.rect(0, 0, 1, 0.5), nil, nil},
+    {"Google Chat", nil, rightMonitor, hs.geometry.rect(0, 0, 1, 0.5), nil, nil},
+    {"VS Code", nil, centerMonitor, hs.layout.left50, nil, nil},
+    -- {"Spotify", nil, macbookMonitor, hs.layout.maximized, nil, nil},
+  }
 
   -- mac
-  hs.application.launchOrFocus("Spotify")
-  hs.application.launchOrFocus("VS Code @ Meta")
+  -- hs.application.launchOrFocus("Spotify")
+  hs.application.launchOrFocus("VS Code @ FB")
   -- right
-  hs.application.launchOrFocus("Workplace Chat")
+  hs.application.launchOrFocus("Workchat")
   hs.application.launchOrFocus("Mattermost")
+  hs.application.launchOrFocus("Google Chat")
   -- center
   hs.application.launchOrFocus("Google Chrome")
   hs.application.launchOrFocus("iTerm2")
 
 
   if hs.screen.find(centerMonitor) ~= nil and hs.screen.find(rightMonitor) then
-    if version == "web" then
-      hs.layout.apply(deskLayoutWeb)
+    if version == "web1" then
+      hs.layout.apply(deskLayoutWeb1)
     end
-    if version == "code" then
-      hs.layout.apply(deskLayoutCode)
+    if version == "code1" then
+      hs.layout.apply(deskLayoutCode1)
+    end
+    if version == "web2" then
+      hs.layout.apply(deskLayoutWeb2)
+    end
+    if version == "code2" then
+      hs.layout.apply(deskLayoutCode2)
     end
   end
  
   vscode = hs.application.get("VS Code @ Meta"):mainWindow():raise()
   chrome = hs.application.get("Google Chrome"):mainWindow():raise()
   spotify = hs.application.get("Spotify"):mainWindow():sendToBack()
+  spotify = hs.application.get("Mattermost"):mainWindow():sendToBack()
 end
 
-function applyDeskLayoutWeb()
-  applyDeskLayout("web")
+function applyDeskLayoutWeb1()
+  applyDeskLayout("web1")
 end
 
-function applyDeskLayoutCode()
-  applyDeskLayout("code")
+function applyDeskLayoutCode1()
+  applyDeskLayout("code1")
+end
+
+function applyDeskLayoutWeb2()
+  applyDeskLayout("web2")
+end
+
+function applyDeskLayoutCode2()
+  applyDeskLayout("code2")
 end
 
 -- WATCHERS + SERVICES
@@ -137,7 +175,7 @@ caffeine:start()
 
 reloadWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig):start()
 appWatcher = hs.application.watcher.new(appWatcherCallback):start()
-screenWatcher = hs.screen.watcher.new(applyDeskLayoutWeb):start()
+screenWatcher = hs.screen.watcher.new(applyDeskLayoutWeb1):start()
 
 -- KEYS
 shortmod = {"ctrl", "cmd"}
@@ -158,8 +196,10 @@ hs.hotkey.bind(shortmod, "]", hs.grid.pushWindowNextScreen)
 hs.hotkey.bind(shortmod, "A", leftSplit)
 hs.hotkey.bind(shortmod, "D", rightSplit)
 
-hs.hotkey.bind(fullmod, "1", applyDeskLayoutWeb)
-hs.hotkey.bind(fullmod, "2", applyDeskLayoutCode)
+hs.hotkey.bind(fullmod, "1", applyDeskLayoutWeb1)
+hs.hotkey.bind(fullmod, "2", applyDeskLayoutCode1)
+hs.hotkey.bind(shortmod, "1", applyDeskLayoutWeb2)
+hs.hotkey.bind(shortmod, "2", applyDeskLayoutCode2)
 hs.hotkey.bind(fullmod, "L", hs.caffeinate.startScreensaver)
 hs.hotkey.bind(fullmod, "S", spotifyTrack)
 hs.hotkey.bind(fullmod, "K", toggleKeyboardLayout)
